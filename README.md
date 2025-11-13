@@ -8,7 +8,7 @@ Each bubble on the map represents a city where ArthaKulam has delivered value an
 - Red bubble markers displaying customer count per city  
 - Click-to-view popup showing city name and total customers  
 - CSV-driven data that updates automatically  
-- OpenStreetMap tiles (free & commercially usable with attribution)
+- OpenStreetMap tiles (With attribution)
 
 ### 🗂 Data Source
 Customer location data is stored in a GitHub CSV file and fetched dynamically into the map.
