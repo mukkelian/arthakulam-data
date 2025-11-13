@@ -1,4 +1,4 @@
-var india_2024_full_boundary = {
+var India_2024_full_boundary = {
   "type": "FeatureCollection",
   "name": "India_2024_full_boundary",
   "features": [
