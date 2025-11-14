@@ -105,7 +105,7 @@ function renderBubbles(data) {
     Object.values(grouped).forEach(item => {
 
         // Bubble radius control
-        const radius = 8 + item.count * 0.5;
+        const radius = 8 + item.count * 1.5;
 
         // Circle bubble (this receives the click)
         const circle = L.circleMarker([item.lat, item.lon], {
