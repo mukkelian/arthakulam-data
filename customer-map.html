@@ -120,12 +120,12 @@ function renderBubbles(data) {
         circle.bindTooltip(`<b>${item.city}</b><br>Customers: ${item.count}`);
 
         // CLICK POPUP (Fixed & Working)
-        circle.on("click", () => {
-            L.popup()
-              .setLatLng([item.lat, item.lon])
-              .setContent(`<b>${item.city}</b><br>Customers: ${item.count}`)
-              .openOn(map);
-        });
+     //   circle.on("click", () => {
+     //       L.popup()
+     //         .setLatLng([item.lat, item.lon])
+     //         .setContent(`<b>${item.city}</b><br>Customers: ${item.count}`)
+     //         .openOn(map);
+     //   });
 
         // Label marker (IMPORTANT: interactive: false)
         const label = L.divIcon({
