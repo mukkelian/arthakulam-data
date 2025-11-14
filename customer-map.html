@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>ArthaKulam – Customer Location Map</title>
+<title>ArthaKulam – Client Location Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <!-- Leaflet CSS -->
@@ -105,7 +105,7 @@ function renderBubbles(data) {
     Object.values(grouped).forEach(item => {
 
         // Bubble radius control
-        const radius = 8 + item.count * 2;
+        const radius = 2 + item.count * 2;
 
         // Circle bubble (this receives the click)
         const circle = L.circleMarker([item.lat, item.lon], {
@@ -117,13 +117,13 @@ function renderBubbles(data) {
         }).addTo(map);
 
         // Tooltip on hover
-        circle.bindTooltip(`<b>${item.city}</b><br>Customers: ${item.count}`);
+        circle.bindTooltip(`<b>${item.city}</b><br>Clients: ${item.count}`);
 
         // CLICK POPUP (Fixed & Working)
      //   circle.on("click", () => {
      //       L.popup()
      //         .setLatLng([item.lat, item.lon])
-     //         .setContent(`<b>${item.city}</b><br>Customers: ${item.count}`)
+     //         .setContent(`<b>${item.city}</b><br>Clients: ${item.count}`)
      //         .openOn(map);
      //   });
 
