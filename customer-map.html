@@ -35,10 +35,27 @@ html, body {
     0% { transform: scale(0.2); opacity: 0.2; }
     100% { transform: scale(1); opacity: 1; }
 }
+
+/* NEW — Total Clients Box */
+#totalBox {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
 </style>
 </head>
 
 <body>
+
+<!-- NEW — Total Clients Box -->
+<div id="totalBox">Total Clients: Loading...</div>
 
 <div id="map"></div>
 
@@ -84,17 +101,14 @@ fetch("https://raw.githubusercontent.com/datasets/geo-countries/master/data/coun
 // ------------------------------------------------------
 async function fetchAllCSVs() {
 
-    // Fetch folder list from GitHub API
     const apiUrl = `https://api.github.com/repos/${REPO}/contents/${DATA_FOLDER}`;
     const folderResp = await fetch(apiUrl);
     const folderFiles = await folderResp.json();
 
-    // Filter only CSV files
     const csvFiles = folderFiles.filter(f => f.name.endsWith(".csv"));
 
     let allRows = [];
 
-    // Fetch each CSV file
     for (const file of csvFiles) {
         const rawUrl = file.download_url;
         const csvText = await fetch(rawUrl).then(r => r.text());
@@ -112,7 +126,12 @@ async function fetchAllCSVs() {
         });
     }
 
+    // RENDER BUBBLES
     renderBubbles(allRows);
+
+    // NEW — UPDATE TOTAL CLIENTS
+    document.getElementById("totalBox").textContent =
+        "Total Clients: " + allRows.length;
 }
 
 fetchAllCSVs();
@@ -134,10 +153,8 @@ function renderBubbles(data) {
 
     Object.values(grouped).forEach(item => {
 
-        // Bubble size control (you may adjust the values)
         const radius = 8 + item.count * 0.25;
 
-        // Circle bubble
         const circle = L.circleMarker([item.lat, item.lon], {
             radius,
             fillColor: "#ff7675",
@@ -146,18 +163,8 @@ function renderBubbles(data) {
             fillOpacity: 0.85
         }).addTo(map);
 
-        // Hover tooltip
         circle.bindTooltip(`<b>${item.city}</b><br>Clients: ${item.count}`);
 
-        // Click popup
-//        circle.on("click", () => {
-//            L.popup()
-//              .setLatLng([item.lat, item.lon])
-//              .setContent(`<b>${item.city}</b><br>Clients: ${item.count}`)
-//              .openOn(map);
-//        });
-
-        // Label inside bubble
         const label = L.divIcon({
             className: "",
             html: `
