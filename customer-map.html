@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>ArthaKulam – Client Location Map</title>
+<title>ArthaKulam – Client Reach Map</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 <!-- Leaflet CSS -->
@@ -46,22 +46,29 @@ html, body {
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
-// CSV URL
-const CSV_URL = "https://raw.githubusercontent.com/mukkelian/arthakulam-data/refs/heads/main/ArthaKulam_data.csv";
+// ------------------------------------------------------
+// CONFIG
+// ------------------------------------------------------
+const REPO = "mukkelian/arthakulam-data";
+const DATA_FOLDER = "data";
 
+// ------------------------------------------------------
 // Initialize map
+// ------------------------------------------------------
 const map = L.map('map', {
     minZoom: 4,
     maxZoom: 10
 }).setView([23.5, 80], 5);
 
-// OpenStreetMap Tiles + Attribution
+// OpenStreetMap (with required attribution)
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// Load India boundary
+// ------------------------------------------------------
+// Load India Boundary
+// ------------------------------------------------------
 fetch("https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson")
   .then(r => r.json())
   .then(world => {
@@ -72,42 +79,65 @@ fetch("https://raw.githubusercontent.com/datasets/geo-countries/master/data/coun
       }).addTo(map);
   });
 
-// Load CSV
-fetch(CSV_URL)
-  .then(r => r.text())
-  .then(csv => {
-      const rows = csv.trim().split("\n");
-      rows.shift(); // remove header
+// ------------------------------------------------------
+// Fetch ALL CSV files inside /data/ folder
+// ------------------------------------------------------
+async function fetchAllCSVs() {
 
-      const data = rows.map(row => {
-          const [location, lat, lon] = row.split(",");
-          return {
-              LOCATION: location.trim(),
-              LAT: parseFloat(lat),
-              LON: parseFloat(lon)
-          };
-      });
+    // Fetch folder list from GitHub API
+    const apiUrl = `https://api.github.com/repos/${REPO}/contents/${DATA_FOLDER}`;
+    const folderResp = await fetch(apiUrl);
+    const folderFiles = await folderResp.json();
 
-      renderBubbles(data);
-  });
+    // Filter only CSV files
+    const csvFiles = folderFiles.filter(f => f.name.endsWith(".csv"));
 
-// Render bubbles
+    let allRows = [];
+
+    // Fetch each CSV file
+    for (const file of csvFiles) {
+        const rawUrl = file.download_url;
+        const csvText = await fetch(rawUrl).then(r => r.text());
+
+        const lines = csvText.trim().split("\n");
+        lines.shift(); // remove header
+
+        lines.forEach(line => {
+            const [location, lat, lon] = line.split(",");
+            allRows.push({
+                LOCATION: location.trim(),
+                LAT: parseFloat(lat),
+                LON: parseFloat(lon)
+            });
+        });
+    }
+
+    renderBubbles(allRows);
+}
+
+fetchAllCSVs();
+
+// ------------------------------------------------------
+// Render bubbles (clean version)
+// ------------------------------------------------------
 function renderBubbles(data) {
 
     const grouped = {};
 
     data.forEach(e => {
         const key = `${e.LAT},${e.LON}`;
-        if (!grouped[key]) grouped[key] = { count: 0, city: e.LOCATION, lat: e.LAT, lon: e.LON };
+        if (!grouped[key]) {
+            grouped[key] = { count: 0, city: e.LOCATION, lat: e.LAT, lon: e.LON };
+        }
         grouped[key].count++;
     });
 
     Object.values(grouped).forEach(item => {
 
-        // Bubble radius control
+        // Bubble size control (you may adjust the values)
         const radius = 8 + item.count * 0.25;
 
-        // Circle bubble (this receives the click)
+        // Circle bubble
         const circle = L.circleMarker([item.lat, item.lon], {
             radius,
             fillColor: "#ff7675",
@@ -116,18 +146,18 @@ function renderBubbles(data) {
             fillOpacity: 0.85
         }).addTo(map);
 
-        // Tooltip on hover
+        // Hover tooltip
         circle.bindTooltip(`<b>${item.city}</b><br>Clients: ${item.count}`);
 
-        // CLICK POPUP (Fixed & Working)
-     //   circle.on("click", () => {
-     //       L.popup()
-     //         .setLatLng([item.lat, item.lon])
-     //         .setContent(`<b>${item.city}</b><br>Clients: ${item.count}`)
-     //         .openOn(map);
-     //   });
+        // Click popup
+//        circle.on("click", () => {
+//            L.popup()
+//              .setLatLng([item.lat, item.lon])
+//              .setContent(`<b>${item.city}</b><br>Clients: ${item.count}`)
+//              .openOn(map);
+//        });
 
-        // Label marker (IMPORTANT: interactive: false)
+        // Label inside bubble
         const label = L.divIcon({
             className: "",
             html: `
@@ -139,10 +169,10 @@ function renderBubbles(data) {
               ">${item.count}</div>
             `,
             iconSize: [radius*2, radius*2],
-            iconAnchor: [radius, radius]
+            iconAnchor: [radius, radius],
+            interactive: false
         });
 
-        // This marker MUST BE NON-INTERACTIVE
         L.marker([item.lat, item.lon], { icon: label, interactive: false }).addTo(map);
     });
 }
