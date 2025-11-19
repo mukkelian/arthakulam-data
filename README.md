@@ -7,7 +7,7 @@ Each bubble on the map represents a city where ArthaKulam has delivered value an
 - Interactive India map with accurate boundaries  
 - Red bubble markers displaying customer count per city  
 - Click-to-view popup showing city name and total customers  
-- CSV-driven data that updates automatically  
+- CSV-driven data (inclosed in /data ) that updates automatically  
 - OpenStreetMap tiles (With attribution)
 
 ### 🗂 Data Source
