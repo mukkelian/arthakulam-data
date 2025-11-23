@@ -1,4 +1,4 @@
-# ArthaKulam Customer Reach Map (v1.0.1)
+# ArthaKulam Customer Reach Map
 
 This project visualizes ArthaKulam’s customer presence across India using an interactive map.  
 Each bubble on the map represents a city where ArthaKulam has delivered value and built trusted relationships.
@@ -7,7 +7,7 @@ Each bubble on the map represents a city where ArthaKulam has delivered value an
 - Interactive India map with accurate boundaries  
 - Red bubble markers displaying customer count per city  
 - Click-to-view popup showing city name and total customers  
-- CSV-driven data (inclosed in /data ) that updates automatically  
+- CSV-driven data (inclosed in arthakulam-data-client/data ) that updates automatically  
 - OpenStreetMap tiles (With attribution)
 
 ### 🗂 Data Source
